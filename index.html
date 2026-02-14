@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Vedecká valentínka · klikni na srdce</title>
+    <title>Vedecká valentínka · čo to asi bude? </title>
     <style>
         * {
             box-sizing: border-box;
@@ -115,7 +115,7 @@
         </button>
         <span class="instruction">❤️ klikni na mňa ❤️</span>
         <div class="image-container" id="imageContainer"></div>
-        <div class="footer-attribution"><span>💚 vedecké pickup texty 💚</span></div>
+        <div class="footer-attribution"><span>💚 Veselý Valentín 💚</span></div>
     </div>
 
     <script>
@@ -124,25 +124,25 @@
 
         // Databáza obrázkov ako čisté texty (skrátené pre lepšiu čitateľnosť)
         const images = [
-            `IF YOU WERE A TRIANGLE YOU'D BE ACUTE ONE. © 2013 ALYSSA DUHE`,
+            `IF YOU WERE A TRIANGLE YOU'D BE ACUTE ONE.`,
             `MY LOVE FOR YOU IS LIKE π... NEVER ENDING`,
-            `You must be the square root of two because I feel irrational around you. © 2014 ALYSSA DUHE`,
-            `YOU LOOK FAMILIAR. DID WE HAVE CLASS TOGETHER? I COULD HAVE SWORN WE HAD CHEMISTRY. © 2014 ALYSSA DUHE`,
-            `F₁ m₁ F₂ m₂ r I'M REALLY ATTRACTED TO YOU, ACCORDING TO NEWTON'S LAW...`,
-            `Are you made of COPPER AND TELLURIUM? 29 Cu / 52 Te`,
-            `Are you a NEGATIVE ION? 'Cause I'm POSITIVELY attracted to you! @estellistration`,
-            `If I could rearrange the Periodic Table, I'd put U and I together! Uranium 92 / Iodine 53`,
-            `I want to be Adenine so I can be stuck with U (A & U) kristinmoonscience`,
+            `√2 You must be the square root of two because I feel irrational around you.`,
+            `YOU LOOK FAMILIAR. DID WE HAVE CLASS TOGETHER? I COULD HAVE SWORN WE HAD CHEMISTRY.`,
+            `F = G(m1m2)/r2 I'M REALLY ATTRACTED TO YOU, ACCORDING TO NEWTON'S LAW...`,
+            `Are you made of COPPER AND TELLURIUM? BECAUSE YOU'RE Cu Te`,
+            `Are you a NEGATIVE ION? 'Cause I'm POSITIVELY attracted to you!`,
+            `If I could rearrange the Periodic Table, I'd put U and I together!`,
+            `I want to be Adenine so I can be stuck with U`,
             `MY ATOMS LOVE YOUR ATOMS, IT'S CHEMISTRY`,
             `Are you Nitrofurantoin? Because you take my breath away.`,
-            `ARE YOU MY SINOATRIAL NODE? BECAUSE YOU MAKE MY HEART allamericanash`
+            `ARE YOU MY SINOATRIAL NODE? BECAUSE YOU MAKE MY HEART PUMP`
         ];
 
         let availableImages = [...images];
 
         function showRandomImage() {
             if (availableImages.length === 0) {
-                imageContainer.innerHTML = `<div class="picture-frame"><div style="background:#fffcf0; border-radius:18px; padding:40px 20px; text-align:center; color:#1f4d2b; font-size:26px;">🥰 to je všetko<br>láska kvitne ďalej 🥰</div></div>`;
+                imageContainer.innerHTML = `<div class="picture-frame"><div style="background:#fffcf0; border-radius:18px; padding:40px 20px; text-align:center; color:#1f4d2b; font-size:26px;">🥰 to je všetko hehe 🥰</div></div>`;
                 return;
             }
             const randomIndex = Math.floor(Math.random() * availableImages.length);
