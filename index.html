@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Vedecká valentínka · klikni na srdce</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            background-color: #C8D6AF;  /* jemná svetlozelená pozadia */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            padding: 16px;
+            margin: 0;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 420px;            /* ideálne pre mobil */
+            background-color: transparent;
+            border-radius: 32px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+        }
+
+        /* Štýl pre biele srdce – tlačidlo */
+        .heart-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
+            transition: transform 0.2s ease;
+            display: inline-block;
+            line-height: 1;
+        }
+
+        .heart-button:active {
+            transform: scale(0.9);
+        }
+
+        .heart-svg {
+            width: 110px;
+            height: auto;
+            display: block;
+            filter: drop-shadow(0 8px 12px rgba(0, 30, 0, 0.2));
+        }
+
+        .heart-svg path {
+            fill: white;
+            stroke: #e0e0e0;
+            stroke-width: 2px;
+            transition: fill 0.2s;
+        }
+
+        .heart-button:hover .heart-svg path {
+            fill: #fff5f5;   /* jemné ružové pri hoveri (pre desktop) */
+        }
+
+        .instruction {
+            color: #3a5e3a;
+            font-size: 1.1rem;
+            letter-spacing: 0.5px;
+            font-weight: 400;
+            text-align: center;
+            margin-top: -0.5rem;
+            background: rgba(255,255,255,0.4);
+            backdrop-filter: blur(4px);
+            padding: 0.6rem 1.6rem;
+            border-radius: 60px;
+            display: inline-block;
+            box-shadow: 0 2px 8px rgba(0,40,0,0.1);
+        }
+
+        /* rámik na obrázok – farba #00563B  (Emerald Depths) */
+        .picture-frame {
+            width: 100%;
+            background-color: #00563B;    /* farba z coolors */
+            padding: 16px 16px 20px 16px; /* väčší spodný okraj pre tien */
+            border-radius: 32px 32px 28px 28px;
+            box-shadow: 0 18px 25px -10px rgba(0, 40, 20, 0.5), inset 0 0 0 1px rgba(255,255,240,0.2);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            margin-bottom: 8px;
+        }
+
+        .picture-frame img {
+            display: block;
+            width: 100%;
+            height: auto;
+            border-radius: 18px;          /* jemný vnútorný rámik */
+            background: #fffaf0;           /* teplý biely podklad na pozadie */
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+            object-fit: contain;
+            aspect-ratio: 1 / 1;           /* štvorcový formát – všetky obrázky vyzerajú dobre */
+        }
+
+        .image-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* tlačidlo na generovanie nového obrázka (voliteľné) – skryté, používame len srdce */
+        .hidden-button {
+            display: none;
+        }
+
+        .footer-attribution {
+            font-size: 0.75rem;
+            color: #4f6b4a;
+            margin-top: 24px;
+            text-align: center;
+            opacity: 0.8;
+        }
+
+        .footer-attribution a {
+            color: #1f4d2b;
+            text-decoration: none;
+            border-bottom: 1px dotted;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <!-- Biele srdce "klikni na mňa" -->
+        <button class="heart-button" id="heartClick" aria-label="klikni pre valentínku">
+            <svg class="heart-svg" viewBox="0 0 100 92" xmlns="http://www.w3.org/2000/svg">
+                <path d="M50 88.9L10.2 49.6C3.7 43.3 0 34.8 0 25.8 0 11.5 11.5 0 25.8 0c8.1 0 15.5 3.8 20.2 9.8L50 15l4-5.2C58.7 3.8 66.1 0 74.2 0 88.5 0 100 11.5 100 25.8c0 9-3.7 17.5-10.2 23.8L50 88.9z"/>
+            </svg>
+        </button>
+
+        <!-- malý text pod srdcom -->
+        <span class="instruction">❤️ klikni na mňa ❤️</span>
+
+        <!-- miesto, kde sa zobrazí aktuálny obrázok v zelenom rámiku -->
+        <div class="image-container" id="imageContainer" style="min-height: 200px;">
+            <!-- spočiatku prázdne – po kliknutí sa naplní -->
+        </div>
+
+        <!-- jemný footer (čisto pre radosť) -->
+        <div class="footer-attribution">
+            <span>💚 vedecké pickup texty 💚</span>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // ----- všetky obrázky prevzaté z tvojich súborov (s vyhýbaním duplicite, zachované poradie) -----
+            const imageList = [
+                // 1000869101.jpg
+                `<svg viewBox="0 0 400 300" style="width:100%; height:auto; background:#fef9e7; font-family: 'Courier New', monospace;" preserveAspectRatio="xMidYMid meet"><style>text { font-size: 32px; font-weight: bold; fill: #1e3a2e; } .small { font-size: 22px; } tspan { font-weight: bold; } .sign { font-size: 20px; fill: #5a4e3c; }</style><rect width="100%" height="100%" fill="#fff4e4" rx="20" ry="20"/><text x="50" y="110" font-family="Courier New">IF YOU WERE A</text><text x="50" y="160" font-family="Courier New">TRIANGLE YOU'D</text><text x="50" y="210" font-family="Courier New">BE ACUTE ONE.</text><text x="180" y="270" class="sign" font-family="Courier New">© 2013 ALYSSA DUHE</text></svg>`,
+
+                // 1000869102.jpg
+                `<svg viewBox="0 0 400 300" style="background:#f0f7ea; font-family: Georgia, serif;" preserveAspectRatio="xMidYMid meet"><rect width="100%" height="100%" fill="#faf9f0" rx="20" ry="20"/><text x="70" y="120" font-size="42" fill="#2d4b2d">MY LOVE</text><text x="40" y="180" font-size="42" fill="#2d4b2d">FOR YOU IS LIKE</text><text x="140" y="250" font-size="48" fill="#b34c4c" font-weight="bold">π...</text><text x="80" y="300" font-size="32" fill="#6f4f2f">NEVER ENDING</text></svg>`,
+
+                // 1000869103.jpg  (a zároveň 1000869104.jpg – identické, zobrazíme iba raz)
+                `<svg viewBox="0 0 400 300" style="background:#f2eee5;" preserveAspectRatio="xMidYMid meet"><rect width="100%" height="100%" fill="#fffff2" rx="20" ry="20"/><text x="30" y="110" font-size="32" fill="#1f4d2b">You must be the square root</text><text x="30" y="160" font-size="32" fill="#1f4d2b">of two because I feel</text><text x="30" y="220" font-size="42" fill="#b1452b" font-weight="bold">irrational</text><text x="30" y="275" font-size="32" fill="#1f4d2b">around you.</text><text x="150" y="300" font-size="20" fill="#8b7765">© 2014 ALYSSA DUHE</text></svg>`,
+
+                // 1000869108.jpg
+                `<svg viewBox="0 0 400 300" style="background:#e8f0f7;" preserveAspectRatio="xMidYMid meet"><rect width="100%" height="100%" fill="#f1f5fa" rx="20" ry="20"/><text x="30" y="100" font-size="30" fill="#1f3b4d">YOU LOOK FAMILIAR. DID WE HAVE</text><text x="30" y="150" font-size="30" fill="#1f3b4d">CLASS TOGETHER? I COULD HAVE</text><text x="30" y="200" font-size="32" fill="#af5f4a" font-weight="bold">SWORN WE HAD CHEMISTRY.</text><text x="150" y="280" fill="#6f5e4f" font-size="24">© 2014 ALYSSA DUHE</text></svg>`,
+
+                // 1000869112.jpg (newton)
+                `<svg viewBox="0 0 400 300" style="background:#e6f0fa;" preserveAspectRatio="xMidYMid meet"><rect width="100%" height="100%" fill="#dfecf5" rx="20" ry="20"/><text x="20" y="60" font-size="26" fill="#124">@PickupTexts</text><text x="60" y="120" font-size="30" fill="#222">F₁   m₁      F₂   m₂</text><text x="140" y="170" font-size="30" fill="#222">r</text><text x="20" y="240" font-size="28" fill="#0a3f3f">I'M REALLY ATTRACTED TO YOU,</text><text x="20" y="280" font-size="26" fill="#0a3f3f">ACCORDING TO NEWTON...</text></svg>`,
+
+                // 1000869115.jpg (Cu Te)
+                `<svg viewBox="0 0 400 300" style="background:#fff3db;" preserveAspectRatio="xMidYMid meet"><rect width="100%" height="100%" fill="#fffae8" rx="20" ry="20"/><text x="30" y="100" font-size="35" fill="#2d4a2d">Are you made of</text><text x="30" y="160" font-size="38" fill="#b35e1a">COPPER AND TELLURIUM?</text><text x="90" y="240" font-size="50" fill="#103b4f">29    52</text><text x="80" y="290" font-size="48" fill="#103b4f">Cu    Te</text></svg>`,
+
+                // 1000869114.jpg (negatívny ión)
+                `<svg viewBox="0 0 400 300" style="background:#dde9f0;" preserveAspectRatio="xMidYMid meet"><rect width="100%" height="100%" fill="#eaf0f5" rx="20" ry="20"/><text x="30" y="100" font-size="40" fill="#1a3b59">Are you a</text><text x="30" y="160" font-size="48" fill="#b32444">NEGATIVE ION?</text><text x="30" y="230" font-size="35" fill="#1d6b3b">'Cause I'm</text><text x="30" y="280" font-size="42" fill="#b32444">POSITIVELY</text><text x="30" y="330" font-size="38" fill="#1d6b3b">attracted to you!</text><text x="170" y="380" fill="#666">@estellistration</text></svg>`,
+
+                // 1000869113.jpg (U a I)
+                `<svg viewBox="0 0 400 300" style="background:#e6f0da;" preserveAspectRatio="xMidYMid meet"><rect width="100%" height="100%" fill="#f9f7e6" rx="20" ry="20"/><text x="30" y="90" font-size="30" fill="#3a4f2b">If I could rearrange</text><text x="30" y="140" font-size="30" fill="#3a4f2b">the Periodic Table,</text><text x="30" y="200" font-size="40" fill="#6d3636">I'd put U and I together!</text><text x="70" y="270" font-size="38">uranium      iodine</text><text x="80" y="310" font-size="38">92           53</text></svg>`,
+
+                // 1000869111.jpg (Adenine a U – rovnaký ako 1000869106, zobrazíme raz)
+                `<svg viewBox="0 0 400 300" style="background:#d9e9e0;" preserveAspectRatio="xMidYMid meet"><rect width="100%" height="100%" fill="#f2ffee" rx="20" ry="20"/><text x="30" y="110" font-size="40" fill="#00663b">I want to be Adenine</text><text x="30" y="170" font-size="40" fill="#402">so I can be stuck with U</text><text x="120" y="250" font-size="80" fill="#2b5c8a">U</text><text x="230" y="250" font-size="80" fill="#2b5c8a">A</text><text x="150" y="310" fill="#43654a">kristinmoonscience</text></svg>`,
+
+                // 1000869109.jpg (atoms love)
+                `<svg viewBox="0 0 400 300" style="background:#f1dbe6;" preserveAspectRatio="xMidYMid meet"><rect width="100%" height="100%" fill="#ffeaf2" rx="20" ry="20"/><text x="30" y="120" font-size="44" fill="#633b5e">MY ATOMS LOVE</text><text x="30" y="190" font-size="44" fill="#633b5e">YOUR ATOMS,</text><text x="30" y="260" font-size="48" fill="#ac4e6b">IT'S CHEMISTRY</text></svg>`,
+
+                // 1000869110.jpg (Nitrofurantoin)
+                `<svg viewBox="0 0 400 300" style="background:#e2eaf5;" preserveAspectRatio="xMidYMid meet"><rect width="100%" height="100%" fill="#f0f2fa" rx="20" ry="20"/><text x="30" y="120" font-size="38" fill="#2d3359">Are you</text><text x="30" y="180" font-size="38" fill="#a6384d">Nitrofurantoin?</text><text x="30" y="250" font-size="38" fill="#2d4f33">Because you</text><text x="30" y="300" font-size="38" fill="#2d4f33">take my breath away.</text></svg>`,
+
+                // 1000869105.jpg (sinoatrial node)
+                `<svg viewBox="0 0 400 300" style="background:#f7e3d4;" preserveAspectRatio="xMidYMid meet"><rect width="100%" height="100%" fill="#fff3e8" rx="20" ry="20"/><text x="20" y="100" font-size="40" fill="#a02f2f">ARE YOU MY</text><text x="20" y="160" font-size="40" fill="#2f6f6f">SINOATRIAL NODE</text><text x="20" y="220" font-size="44" fill="#c44">BECAUSE</text><text x="20" y="270" font-size="40" fill="#a02f2f">YOU MAKE MY</text><text x="20" y="320" font-size="52" fill="#b3345a">HEART</text><text x="260" y="350" fill="#3f5f4c">allamericanash</text></svg>`
+            ];
+
+            // odstránime prípadný duplicitný obrázok 1000869106 (je identický s 9111) -> my sme už 9111 zaradili iba raz, OK.
+            // pre istotu necháme tak, ako je – používateľ poskytol oba, ale my ich nechceme duplicitne.
+            // v zozname vyššie je už len jeden adenínový (ten z 1000869111, ktorý reprezentuje oba)
+
+            const displayedImageContainer = document.getElementById('imageContainer');
+            const heartBtn = document.getElementById('heartClick');
+
+            // Pole so všetkými obrázkami (už unikátne)
+            let availableImages = [...imageList];  
+
+            // Funkcia na výber náhodného obrázka a jeho odstránenie
+            function getRandomImageAndRemove() {
+                if (availableImages.length === 0) {
+                    // Ak už nie sú obrázky, vrátime null (neskôr ošetríme)
+                    return null;
+                }
+                const randomIndex = Math.floor(Math.random() * availableImages.length);
+                const selected = availableImages[randomIndex];
+                // odstránime vybraný obrázok z poľa
+                availableImages.splice(randomIndex, 1);
+                return selected;
+            }
+
+            // Funkcia na vykreslenie aktuálneho obrázka (ak existuje)
+            function renderRandomImage() {
+                if (availableImages.length === 0) {
+                    // ak už niet obrázkov, zobrazíme koncový odkaz alebo prázdny frame
+                    displayedImageContainer.innerHTML = `
+                        <div class="picture-frame" style="background: #00563B; padding: 20px;">
+                            <div style="background: #fffcf0; border-radius: 18px; padding: 40px 20px; text-align: center; color: #1f4d2b; font-size: 26px;">
+                                🥰 to je všetko<br>láska kvitne ďalej 🥰
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const svgString = getRandomImageAndRemove();
+                if (svgString) {
+                    displayedImageContainer.innerHTML = `
+                        <div class="picture-frame">
+                            ${svgString}
+                        </div>
+                    `;
+                } else {
+                    // žiadny obrázok – bezpečne prázdne
+                    displayedImageContainer.innerHTML = '';
+                }
+            }
+
+            // Po kliknutí na srdce vždy zobrazíme nový obrázok (ak ešte nejaký je)
+            heartBtn.addEventListener('click', function() {
+                renderRandomImage();
+            });
+
+            // Volite
